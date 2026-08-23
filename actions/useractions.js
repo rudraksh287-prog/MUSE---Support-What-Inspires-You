@@ -5,13 +5,20 @@ import connectDb from "@/db/connectDb"
 import User from "@/models/User"
 
 export const initiate = async (amount, to_username, paymentform) => {
-  // console.log("KEY_ID:", process.env.KEY_ID);
-  // console.log("KEY_SECRET:", process.env.KEY_SECRET);
+  
 
   await connectDb();
 
-  let user = await User.findOne({ username: to_username })
-  const secret = user.razorpaysecret
+  let user = await User.findOne({
+    username: to_username,
+    isCreator: true
+})
+
+if (!user) {
+    throw new Error("This user is not accepting payments")
+}
+
+const secret = user.razorpaysecret
 
   var instance = new Razorpay({
     key_id: user.razorpayid,
@@ -31,33 +38,6 @@ export const initiate = async (amount, to_username, paymentform) => {
 }
 
 
-
-// export const fetchuser = async (username) => {
-//   await connectDb();
-//   let u = await User.findOne({ username })
-//   let user = u.toObject({ flattenObjectIds: true })
-//   return user
-//   // const u = await User.findOne({ username }).lean();
-
-//   // return JSON.parse(JSON.stringify(u));
-// };
-
-
-// export const fetchuser = async (email) => {
-
-//     await connectDb();
-
-//     const u = await User.findOne({ email }).lean()
-
-//     if (!u) {
-//         return null
-//     }
-
-//     return {
-//         ...u,
-//         _id: u._id.toString()
-//     }
-// }
 
 export const fetchuser = async (username) => {
   await connectDb();
@@ -86,10 +66,7 @@ export const fetchuserByEmail = async (email) => {
 };
 
 export const fetchpayments = async (username) => {
-  // await connectDb()
-  // // find all payments sorted by decreasing order of amount and flatten object ids
-  // let p = await Payment.find({ to_user: username, done:true }).sort({ amount: -1 }).limit(10).lean()
-  // return p
+
 
 
   await connectDb()
@@ -106,41 +83,7 @@ export const fetchpayments = async (username) => {
 }
 
 
-// export const updateProfile = async (data, oldusername) => {
-//   await connectDb();
 
-//   const ndata = Object.fromEntries(data);
-
-//   if (oldusername !== ndata.username) {
-//     let u = await User.findOne({ username: ndata.username })
-//     if (u) {
-//       return { error: "Username already exists" }
-//     }
-//     await User.updateOne(
-//       // {email: ndata.email}, ndata {this is already commented}
-//       { username: oldusername },
-//       { $set: ndata }
-//     )
-//     // Now update all the usernames in the Payments table {this is already commented}
-//     await Payment.updateMany(
-//       // {to_user: oldusername}, {to_user: ndata.username} {this is already commented}
-//       { to_user: oldusername },
-//       { $set: { to_user: ndata.username } }
-//     )
-
-
-//   }
-//   else {
-
-
-//     await User.updateOne(
-//       // {email: ndata.email}, ndata {this is already commented}
-//       { username: oldusername },
-//       { $set: ndata }
-//     )
-//   }
-  
-// };
 
 export const updateProfile = async (data, email) => {
 
@@ -199,5 +142,70 @@ export const updateProfile = async (data, email) => {
     return {
         success: true,
         username: newusername
+    };
+};
+
+export const becomeCreator = async (email) => {
+    await connectDb();
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        return {
+            error: "User not found"
+        };
+    }
+
+    if (user.isCreator) {
+        return {
+            error: "You are already a creator"
+        };
+    }
+
+    await User.updateOne(
+        { email },
+        {
+            $set: {
+                isCreator: true
+            }
+        }
+    );
+
+    return {
+        success: true,
+        isCreator: true
+    };
+};
+
+
+export const stopBeingCreator = async (email) => {
+    await connectDb();
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        return {
+            error: "User not found"
+        };
+    }
+
+    if (!user.isCreator) {
+        return {
+            error: "You are not a creator"
+        };
+    }
+
+    await User.updateOne(
+        { email },
+        {
+            $set: {
+                isCreator: false
+            }
+        }
+    );
+
+    return {
+        success: true,
+        isCreator: false
     };
 };

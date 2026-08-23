@@ -61,6 +61,9 @@ const PaymentPage = ({ username }) => {
         let dbpayments = await fetchpayments(username)
         setpayments(dbpayments)
     }
+
+
+    
     const pay = async (amount) => {
         let a = await initiate(amount, username, paymentform)
         let orderId = a.id;
@@ -109,12 +112,7 @@ const PaymentPage = ({ username }) => {
             <Script src="https://checkout.razorpay.com/v1/checkout.js" />
 
 
-            {/* <div className='cover w-full relative'>
-                <img className="mt-3 w-full h-[350px] object-cover md:object-cover" src={currentUser.coverpic} alt="" />
-                <div className="absolute -bottom-20 right-[46%] border-2  rounded-4xl overflow-hidden border-white">
-                    <img width={100} height={100} className=' rounded-4xl w-[100px] h-[100px] object-cover' src={currentUser.profilepic} alt="" />
-                </div>
-            </div> */}
+           
             <div className="cover w-full relative aspect-[3/1] sm:aspect-[4/1]">
     <img
         className="mt-3 absolute inset-0 w-full h-full object-cover"
@@ -152,18 +150,7 @@ const PaymentPage = ({ username }) => {
                                     </span>
                                 </li>
                             })}
-                            {/* <li className='flex gap-2 items-center my-4'>
-                                <img width={30} src="/avatar.gif" alt="user avatar" />
-                                <span>
-                                    rakes donated <span className='font-bold'>₹0.5</span> witha message " chalbe lowde"
-                                </span>
-                            </li>
-                            <li className='flex gap-2 items-center my-4'>
-                                <img width={30} src="/avatar.gif" alt="user avatar" />
-                                <span>
-                                    terimkc donated <span className='font-bold'>₹40</span> witha message " "
-                                </span>
-                            </li> */}
+                            
 
                         </ul>
                     </div>
@@ -204,9 +191,7 @@ const PaymentPage = ({ username }) => {
                                 <button onClick={() => { pay(Number.parseInt(paymentform.amount) * 100) }} type="button" className="w-30 text-white bg-gradient-to-r from-purple-500 via-purple-500 to-purple-600 hover:bg-gradient-to-br focus:ring-2 focus:outline-none focus:ring-purple-300 dark:focus:ring-white font-medium rounded-2xl text-sm px-4 py-2.5 text-center leading-5 mx-1 disabled:from-slate-400 disabled:via-slate-500 disabled:to-slate-600" disabled={paymentform.name?.length < 3 || paymentform.message?.length < 4 || paymentform.amount?.length< 1}>PAY</button>
                             </div>
 
-                            {/* <button className="bg-slate-800 p-3 rounded-lg">
-                                Pay
-                            </button> */}
+                            
                         </div>
                         {/* OR CHOOSE FROM THESE AMOUNTs */}
                         <div className=" flex flex-col md:flex-row gap-2 mt-5">

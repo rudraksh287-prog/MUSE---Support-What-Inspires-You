@@ -1,148 +1,10 @@
-// "use client"
-// import React, { useEffect, useState } from 'react'
-// import { useSession, signIn, signOut } from "next-auth/react"
-// import { useRouter } from 'next/navigation'
-// import { fetchuser, updateProfile } from '@/actions/useractions'
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
-// // import { Bounce } from 'react-toastify';
 
-// const Dashboard = () => {
-//     const { data: session, update, status } = useSession()
-//     const router = useRouter()
-//     const [form, setform] = useState({})
-
-//   //  {alredy commented from here } // useEffect(() => {
-//     //     // console.log(session)
-
-//     //     if (!session) {
-//     //         router.push('/login')
-//     //     }
-//     //     else {
-//     //         getData()
-//     //     }
-//     // }, [])
-
-//     // const { data: session, status, update } = useSession() {already commented to here}
-
-// useEffect(() => {
-//     if (status === "loading") return
-
-//     if (status === "unauthenticated") {
-//         router.push("/login")
-//         return
-//     }
-
-//     if (status === "authenticated") {
-//         getData()
-//     }
-// }, [status])
-
-//     const getData = async () => {
-//         let u = await fetchuser(session.user.name)
-//         setform(u)
-//     }
-
-//     const handleChange = (e) => {
-//         setform({ ...form, [e.target.name]: e.target.value })
-//     }
-
-//     const handleSubmit = async (e) => {
-//         let a = await updateProfile(e, session.user.name)
-//         update()
-//         // alert("Profile Updated")
-//         toast('Profile Updated', {
-//             position: "top-right",
-//             autoClose: 5000,
-//             hideProgressBar: false,
-//             closeOnClick: true,
-//             pauseOnHover: true,
-//             draggable: true,
-//             progress: undefined,
-//             theme: "dark"
-//             });
-//     }
-
-
-
-
-
-//     return (
-//         <>
-//             <ToastContainer
-//                 position="top-right"
-//                 autoClose={5000}
-//                 hideProgressBar={false}
-//                 newestOnTop={false}
-//                 closeOnClick
-//                 rtl={false}
-//                 pauseOnFocusLoss
-//                 draggable
-//                 pauseOnHover
-//                 theme="light"
-//             />
-//             {/* Same as */}
-//             <ToastContainer />
-//             <div className='container mx-auto py-5 px-6 '>
-//                 <h1 className='text-center my-5 text-3xl font-bold'>Welcome to your Dashboard</h1>
-
-//                 <form className="max-w-2xl mx-auto" action={handleSubmit}>
-
-//                     <div className='my-2'>
-//                         <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Name</label>
-//                         <input value={form.name ? form.name : ""} onChange={handleChange} type="text" name='name' id="name" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-//                     </div>
-//                     {/* input for email */}
-//                     <div className="my-2">
-//                         <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Email</label>
-//                         <input value={form.email ? form.email : ""} onChange={handleChange} type="email" name='email' id="email" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-//                     </div>
-//                     {/* input forusername */}
-//                     <div className='my-2'>
-//                         <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Username</label>
-//                         <input value={form.username ? form.username : ""} onChange={handleChange} type="text" name='username' id="username" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-//                     </div>
-//                     {/* input for profile picture of input type text */}
-//                     <div className="my-2">
-//                         <label htmlFor="profilepic" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Profile Picture</label>
-//                         <input value={form.profilepic ? form.profilepic : ""} onChange={handleChange} type="text" name='profilepic' id="profilepic" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-//                     </div>
-
-//                     {/* input for cover pic  */}
-//                     <div className="my-2">
-//                         <label htmlFor="coverpic" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Cover Picture</label>
-//                         <input value={form.coverpic ? form.coverpic : ""} onChange={handleChange} type="text" name='coverpic' id="coverpic" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-//                     </div>
-//                     {/* input razorpay id */}
-//                     <div className="my-2">
-//                         <label htmlFor="razorpayid" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Razorpay Id</label>
-//                         <input value={form.razorpayid ? form.razorpayid : ""} onChange={handleChange} type="text" name='razorpayid' id="razorpayid" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-//                     </div>
-//                     {/* input razorpay secret */}
-//                     <div className="my-2">
-//                         <label htmlFor="razorpaysecret" className="block mb-2 text-sm font-medium text-gray-900 dark:text-black">Razorpay Secret</label>
-//                         <input value={form.razorpaysecret ? form.razorpaysecret : ""} onChange={handleChange} type="text" name='razorpaysecret' id="razorpaysecret" className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-white dark:border-gray-600 dark:placeholder-gray-400 dark:text-black dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-//                     </div>
-
-//                     {/* Submit Button  */}
-//                     <div className="my-6 ">
-//                         <button type="submit" className="block w-60 p-2 text-white bg-blue-500 rounded-2xl hover:bg-blue-600 focus:ring-blue-500 focus:ring-2 focus:outline-none   dark:focus:ring-black font-medium text-sm">Save</button>
-//                     </div>
-//                 </form>
-
-
-//             </div>
-//         </>
-//     )
-// }
-
-// export default Dashboard
 "use client"
 
 import React, { useEffect, useState } from 'react'
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation'
-import { fetchuserByEmail, updateProfile } from '@/actions/useractions'
+import { fetchuserByEmail, stopBeingCreator, becomeCreator, updateProfile } from '@/actions/useractions'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -153,6 +15,8 @@ const Dashboard = () => {
 
     const [form, setform] = useState({})
     const [saving, setsaving] = useState(false)
+    const [becomingCreator, setBecomingCreator] = useState(false)
+    const [stoppingCreator, setStoppingCreator] = useState(false)
 
     useEffect(() => {
 
@@ -172,14 +36,14 @@ const Dashboard = () => {
 
     const getData = async () => {
 
-    if (!session?.user?.email) return
+        if (!session?.user?.email) return
 
-    const u = await fetchuserByEmail(session.user.email)
+        const u = await fetchuserByEmail(session.user.email)
 
-    if (u) {
-        setform(u)
+        if (u) {
+            setform(u)
+        }
     }
-}
 
     const handleChange = (e) => {
 
@@ -214,9 +78,9 @@ const Dashboard = () => {
             })
 
             const result = await updateProfile(
-    formData,
-    session.user.email
-)
+                formData,
+                session.user.email
+            )
 
             if (result?.error) {
 
@@ -254,6 +118,91 @@ const Dashboard = () => {
     }
 
 
+    const handleBecomeCreator = async () => {
+
+        if (becomingCreator) return
+
+        setBecomingCreator(true)
+
+        try {
+
+            const result = await becomeCreator(session.user.email)
+
+            if (result?.error) {
+                toast.error(result.error)
+                return
+            }
+
+            setform(prev => ({
+    ...prev,
+    isCreator: true
+}))
+
+await update({
+    isCreator: true
+})
+
+            toast.success("You are now a creator!")
+
+        } catch (error) {
+
+            console.error("BECOME CREATOR ERROR:", error)
+
+            toast.error("Something went wrong")
+
+        } finally {
+
+            setBecomingCreator(false)
+
+        }
+    }
+
+
+    const handleStopBeingCreator = async () => {
+
+        if (stoppingCreator) return
+
+        const confirmed = window.confirm(
+            "Are you sure you want to stop being a creator? You will no longer receive new payments through MUSE."
+        )
+
+        if (!confirmed) return
+
+        setStoppingCreator(true)
+
+        try {
+
+            const result = await stopBeingCreator(session.user.email)
+
+            if (result?.error) {
+                toast.error(result.error)
+                return
+            }
+
+            setform(prev => ({
+    ...prev,
+    isCreator: false
+}))
+
+await update({
+    isCreator: false
+})
+
+            toast.success("You are no longer a creator")
+
+        } catch (error) {
+
+            console.error("STOP CREATOR ERROR:", error)
+
+            toast.error("Something went wrong")
+
+        } finally {
+
+            setStoppingCreator(false)
+
+        }
+    }
+
     return (
         <>
 
@@ -275,6 +224,58 @@ const Dashboard = () => {
                 <h1 className='text-center my-5 text-3xl font-bold'>
                     Welcome to your Dashboard
                 </h1>
+
+               {!form.isCreator ? (
+
+    <div className="my-6 p-6 border rounded-xl">
+
+        <h2 className="text-xl font-bold">
+            Become a Creator
+        </h2>
+
+        <p className="text-gray-600 my-2">
+            Create your public MUSE page and start receiving support.
+        </p>
+
+        <button
+            type="button"
+            onClick={handleBecomeCreator}
+            disabled={becomingCreator}
+            className="block w-48 p-2 text-white bg-purple-600 rounded-2xl hover:bg-purple-700 font-medium text-sm disabled:bg-gray-400"
+        >
+            {becomingCreator ? "Setting up..." : "Become a Creator"}
+        </button>
+
+    </div>
+
+) : (
+
+    <div className="my-6 p-6 border rounded-xl">
+
+        <h2 className="text-xl font-bold">
+            Creator Account
+        </h2>
+
+        <p className="text-gray-600 my-2">
+            Your creator profile is active.
+        </p>
+
+        <p className="text-sm text-gray-500 mb-4">
+            You can receive support through your public MUSE page.
+        </p>
+
+        <button
+            type="button"
+            onClick={handleStopBeingCreator}
+            disabled={stoppingCreator}
+            className="block w-52 p-2 text-white bg-red-500 rounded-2xl hover:bg-red-600 font-medium text-sm disabled:bg-gray-400"
+        >
+            {stoppingCreator ? "Disabling..." : "Stop Being a Creator"}
+        </button>
+
+    </div>
+
+)}
 
                 <form
                     className="max-w-2xl mx-auto"
@@ -385,7 +386,8 @@ const Dashboard = () => {
 
                     </div>
 
-
+ {form.isCreator && (
+    <>
                     <div className="my-2">
 
                         <label
@@ -426,7 +428,8 @@ const Dashboard = () => {
                         />
 
                     </div>
-
+    </>
+)}
 
                     <div className="my-6">
 
