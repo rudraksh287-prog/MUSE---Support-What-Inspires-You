@@ -8,6 +8,7 @@ const UserSchema = new Schema({
     profilepic: {type: String},
     coverpic: {type: String},
     isCreator: { type: Boolean, default: false },
+    isDemoCreator: { type: Boolean, default: false },
     razorpayid: { type: String },
     razorpaysecret: { type: String },
     createdAt: { type: Date, default: Date.now },

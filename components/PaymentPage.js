@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation"
 
 
-const PaymentPage = ({ username }) => {
+const PaymentPage = ({ username, creator }) => {
     // const {data: session} = useSession()
 
     // const [paymentform, setpaymentform] = useState({})
@@ -21,7 +21,7 @@ const PaymentPage = ({ username }) => {
         message: "",
         amount: "",
     })
-    const [currentUser, setcurrentUser] = useState({})
+    const [currentUser, setcurrentUser] = useState(creator)
     const [payments, setpayments] = useState([])
     const searchParams= useSearchParams()
     const router = useRouter()
@@ -56,8 +56,8 @@ const PaymentPage = ({ username }) => {
     }
 
     const getData = async () => {
-        let u = await fetchuser(username)
-        setcurrentUser(u)
+        // let u = await fetchuser(username)
+        // setcurrentUser(u)
         let dbpayments = await fetchpayments(username)
         setpayments(dbpayments)
     }

@@ -39,10 +39,28 @@ const secret = user.razorpaysecret
 
 
 
+// export const fetchuser = async (username) => {
+//   await connectDb();
+
+//   const u = await User.findOne({ username }).lean();
+
+//   if (!u) return null;
+
+//   return {
+//     ...u,
+//     _id: u._id.toString(),
+//   };
+// };
+
 export const fetchuser = async (username) => {
   await connectDb();
 
-  const u = await User.findOne({ username }).lean();
+  const u = await User.findOne({
+    username,
+    isCreator: true
+  })
+    .select("name username profilepic coverpic isCreator razorpayid")
+    .lean();
 
   if (!u) return null;
 
