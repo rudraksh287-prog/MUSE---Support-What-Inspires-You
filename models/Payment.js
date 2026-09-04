@@ -11,7 +11,17 @@ const PaymentSchema = new Schema({
     updatedAt: { type: Date, default: Date.now }, 
     
     done: { type: Boolean, default: false },
+supporterId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+},
 
+creatorId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+},
     });
 
  

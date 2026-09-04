@@ -17,6 +17,7 @@ const Dashboard = () => {
     const [saving, setsaving] = useState(false)
     const [becomingCreator, setBecomingCreator] = useState(false)
     const [stoppingCreator, setStoppingCreator] = useState(false)
+    
 
     useEffect(() => {
 
@@ -44,6 +45,8 @@ const Dashboard = () => {
             setform(u)
         }
     }
+
+    
 
     const handleChange = (e) => {
 
@@ -134,13 +137,13 @@ const Dashboard = () => {
             }
 
             setform(prev => ({
-    ...prev,
-    isCreator: true
-}))
+                ...prev,
+                isCreator: true
+            }))
 
-await update({
-    isCreator: true
-})
+            await update({
+                isCreator: true
+            })
 
             toast.success("You are now a creator!")
 
@@ -180,13 +183,13 @@ await update({
             }
 
             setform(prev => ({
-    ...prev,
-    isCreator: false
-}))
+                ...prev,
+                isCreator: false
+            }))
 
-await update({
-    isCreator: false
-})
+            await update({
+                isCreator: false
+            })
 
             toast.success("You are no longer a creator")
 
@@ -225,57 +228,57 @@ await update({
                     Welcome to your Dashboard
                 </h1>
 
-               {!form.isCreator ? (
+                {!form.isCreator ? (
 
-    <div className="my-6 p-6 border rounded-xl">
+                    <div className="my-6 p-6 border rounded-xl">
 
-        <h2 className="text-xl font-bold">
-            Become a Creator
-        </h2>
+                        <h2 className="text-xl font-bold">
+                            Become a Creator
+                        </h2>
 
-        <p className="text-gray-600 my-2">
-            Create your public MUSE page and start receiving support.
-        </p>
+                        <p className="text-gray-600 my-2">
+                            Create your public MUSE page and start receiving support.
+                        </p>
 
-        <button
-            type="button"
-            onClick={handleBecomeCreator}
-            disabled={becomingCreator}
-            className="block w-48 p-2 text-white bg-purple-600 rounded-2xl hover:bg-purple-700 font-medium text-sm disabled:bg-gray-400"
-        >
-            {becomingCreator ? "Setting up..." : "Become a Creator"}
-        </button>
+                        <button
+                            type="button"
+                            onClick={handleBecomeCreator}
+                            disabled={becomingCreator}
+                            className="block w-48 p-2 text-white bg-purple-600 rounded-2xl hover:bg-purple-700 font-medium text-sm disabled:bg-gray-400"
+                        >
+                            {becomingCreator ? "Setting up..." : "Become a Creator"}
+                        </button>
 
-    </div>
+                    </div>
 
-) : (
+                ) : (
 
-    <div className="my-6 p-6 border rounded-xl">
+                    <div className="my-6 p-6 border rounded-xl">
 
-        <h2 className="text-xl font-bold">
-            Creator Account
-        </h2>
+                        <h2 className="text-xl font-bold">
+                            Creator Account
+                        </h2>
 
-        <p className="text-gray-600 my-2">
-            Your creator profile is active.
-        </p>
+                        <p className="text-gray-600 my-2">
+                            Your creator profile is active.
+                        </p>
 
-        <p className="text-sm text-gray-500 mb-4">
-            You can receive support through your public MUSE page.
-        </p>
+                        <p className="text-sm text-gray-500 mb-4">
+                            You can receive support through your public MUSE page.
+                        </p>
 
-        <button
-            type="button"
-            onClick={handleStopBeingCreator}
-            disabled={stoppingCreator}
-            className="block w-52 p-2 text-white bg-red-500 rounded-2xl hover:bg-red-600 font-medium text-sm disabled:bg-gray-400"
-        >
-            {stoppingCreator ? "Disabling..." : "Stop Being a Creator"}
-        </button>
+                        <button
+                            type="button"
+                            onClick={handleStopBeingCreator}
+                            disabled={stoppingCreator}
+                            className="block w-52 p-2 text-white bg-red-500 rounded-2xl hover:bg-red-600 font-medium text-sm disabled:bg-gray-400"
+                        >
+                            {stoppingCreator ? "Disabling..." : "Stop Being a Creator"}
+                        </button>
 
-    </div>
+                    </div>
 
-)}
+                )}
 
                 <form
                     className="max-w-2xl mx-auto"
@@ -386,50 +389,51 @@ await update({
 
                     </div>
 
- {form.isCreator && (
-    <>
-                    <div className="my-2">
+                    {form.isCreator && (
+                        <>
+                            
+                            <div className="my-2">
 
-                        <label
-                            htmlFor="razorpayid"
-                            className="block mb-2 text-sm font-medium text-gray-900"
-                        >
-                            Razorpay Id
-                        </label>
+                                <label
+                                    htmlFor="razorpayid"
+                                    className="block mb-2 text-sm font-medium text-gray-900"
+                                >
+                                    Razorpay Id
+                                </label>
 
-                        <input
-                            value={form.razorpayid || ""}
-                            onChange={handleChange}
-                            type="text"
-                            name='razorpayid'
-                            id='razorpayid'
-                            className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
-                        />
+                                <input
+                                    value={form.razorpayid || ""}
+                                    onChange={handleChange}
+                                    type="text"
+                                    name='razorpayid'
+                                    id='razorpayid'
+                                    className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
+                                />
 
-                    </div>
+                            </div>
 
 
-                    <div className="my-2">
+                            <div className="my-2">
 
-                        <label
-                            htmlFor="razorpaysecret"
-                            className="block mb-2 text-sm font-medium text-gray-900"
-                        >
-                            Razorpay Secret
-                        </label>
+                                <label
+                                    htmlFor="razorpaysecret"
+                                    className="block mb-2 text-sm font-medium text-gray-900"
+                                >
+                                    Razorpay Secret
+                                </label>
 
-                        <input
-                            value={form.razorpaysecret || ""}
-                            onChange={handleChange}
-                            type="text"
-                            name='razorpaysecret'
-                            id='razorpaysecret'
-                            className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
-                        />
+                                <input
+                                    value={form.razorpaysecret || ""}
+                                    onChange={handleChange}
+                                    type="text"
+                                    name='razorpaysecret'
+                                    id='razorpaysecret'
+                                    className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
+                                />
 
-                    </div>
-    </>
-)}
+                            </div>
+                        </>
+                    )}
 
                     <div className="my-6">
 

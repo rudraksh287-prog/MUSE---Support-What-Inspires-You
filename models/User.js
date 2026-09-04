@@ -7,6 +7,7 @@ const UserSchema = new Schema({
     username: { type: String, required: true },
     profilepic: {type: String},
     coverpic: {type: String},
+    
     isCreator: { type: Boolean, default: false },
     isDemoCreator: { type: Boolean, default: false },
     razorpayid: { type: String },

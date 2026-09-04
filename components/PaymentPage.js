@@ -13,9 +13,8 @@ import { notFound } from "next/navigation"
 
 
 const PaymentPage = ({ username, creator }) => {
-    // const {data: session} = useSession()
+    const {data: session} = useSession()
 
-    // const [paymentform, setpaymentform] = useState({})
     const [paymentform, setpaymentform] = useState({
         name: "",
         message: "",
@@ -64,36 +63,71 @@ const PaymentPage = ({ username, creator }) => {
 
 
     
+    // const pay = async (amount) => {
+    //     let a = await initiate(amount, username, paymentform)
+    //     let orderId = a.id;
+    //     var options = {
+    //         "key": currentUser.razorpayid, // Enter the Key ID generated from the Dashboard
+    //         "amount": amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+    //         "currency": "INR",
+    //         "name": "MUSE", //your business name
+    //         "description": "Test Transaction",
+    //         "image": "https://example.com/your_logo",
+    //         "order_id": orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+    //         "callback_url": `${process.env.NEXT_PUBLIC_URL}/api/razorpay`,
+    //         "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
+    //             "name": "Gaurav Kumar", //your customer's name
+    //             "email": "gaurav.kumar@example.com",
+    //             "contact": "9000090000" //Provide the customer's phone number for better conversion rates 
+    //         },
+    //         "notes": {
+    //             "address": "Razorpay Corporate Office"
+    //         },
+    //         "theme": {
+    //             "color": "#3399cc"
+    //         }
+    //     }
+
+    //     // var rzp1=new Razorpay(options)
+    //     var rzp1 = new window.Razorpay(options)
+    //     rzp1.open();
+    // }
+
     const pay = async (amount) => {
-        let a = await initiate(amount, username, paymentform)
+        if (!session) {
+        toast.error("Please login to support this creator!");
+        router.push("/login");
+        return;
+    }
+    try {
+        let a = await initiate(amount, username, paymentform);
         let orderId = a.id;
+
+        // Fallback key for demo creators
+        const razorpayKey = currentUser.razorpayid || process.env.NEXT_PUBLIC_KEY_ID;
+
         var options = {
-            "key": currentUser.razorpayid, // Enter the Key ID generated from the Dashboard
-            "amount": amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "key": razorpayKey,
+            "amount": amount,
             "currency": "INR",
-            "name": "MUSE", //your business name
-            "description": "Test Transaction",
-            "image": "https://example.com/your_logo",
-            "order_id": orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+            "name": "MUSE",
+            "description": "Support Creator",
+            "order_id": orderId,
             "callback_url": `${process.env.NEXT_PUBLIC_URL}/api/razorpay`,
-            "prefill": { //We recommend using the prefill parameter to auto-fill customer's contact information especially their phone number
-                "name": "Gaurav Kumar", //your customer's name
-                "email": "gaurav.kumar@example.com",
-                "contact": "9000090000" //Provide the customer's phone number for better conversion rates 
-            },
-            "notes": {
-                "address": "Razorpay Corporate Office"
+            "prefill": {
+                "name": paymentform.name,
             },
             "theme": {
-                "color": "#3399cc"
+                "color": "#9333ea"
             }
-        }
+        };
 
-        // var rzp1=new Razorpay(options)
-        var rzp1 = new window.Razorpay(options)
+        var rzp1 = new window.Razorpay(options);
         rzp1.open();
+    } catch (error) {
+        toast.error(error.message || "Failed to initiate payment");
     }
-
+};
     return (
         <>
             <ToastContainer
