@@ -5,50 +5,22 @@ import connectDb from "@/db/connectDb"
 import User from "@/models/User"
 import { auth } from "@/app/api/auth/[...nextauth]/route";
 
-// export const initiate = async (amount, to_username, paymentform) => {
-  
+ 
 
-//   await connectDb();
-
-//   let user = await User.findOne({
-//     username: to_username,
-//     isCreator: true
-// })
-
-// if (!user) {
-//     throw new Error("This user is not accepting payments")
-// }
-
-// const secret = user.razorpaysecret
-
-//   var instance = new Razorpay({
-//     key_id: user.razorpayid,
-//     key_secret: secret,
-//   });
-
-//   let options = {
-//     amount: Number.parseInt(amount)
-//     , currency: "INR",
-
-
-//   }
-
-//   let x = await instance.orders.create(options)
-//   await Payment.create({ oid: x.id, amount: amount / 100, to_user: to_username, name: paymentform.name, message: paymentform.message })
-//   return x
-// }
 export const initiate = async (amount, to_username, paymentform) => {
     await connectDb();
 
-    // 1. Require user to be logged in to make a payment
     const session = await auth();
     if (!session || !session.user) {
         throw new Error("You must be logged in to make a payment.");
     }
 
-    // 2. Prevent self-support
     const currentUser = await User.findOne({ email: session.user.email });
-    if (currentUser && currentUser.username === to_username) {
+    if (!currentUser) {
+        throw new Error("User record not found in database.");
+    }
+
+    if (currentUser.username === to_username) {
         throw new Error("You cannot support yourself.");
     }
 
@@ -58,21 +30,11 @@ export const initiate = async (amount, to_username, paymentform) => {
     });
 
     if (!user) {
-        throw new Error("This user is not accepting payments");
+        throw new Error("This creator is not accepting payments.");
     }
 
-    // Determine Razorpay credentials
-    let key_id = user.razorpayid;
-    let key_secret = user.razorpaysecret;
-
-    if (!key_id || !key_secret || user.isDemoCreator) {
-        key_id = process.env.KEY_ID || process.env.NEXT_PUBLIC_KEY_ID;
-        key_secret = process.env.KEY_SECRET;
-    }
-
-    if (!key_id || !key_secret) {
-        throw new Error("Payment gateway environment keys are missing on the server.");
-    }
+    let key_id = user.razorpayid || process.env.KEY_ID || process.env.NEXT_PUBLIC_KEY_ID;
+    let key_secret = user.razorpaysecret || process.env.KEY_SECRET;
 
     var instance = new Razorpay({
         key_id: key_id,
@@ -85,30 +47,24 @@ export const initiate = async (amount, to_username, paymentform) => {
     };
 
     let x = await instance.orders.create(options);
+
     await Payment.create({ 
         oid: x.id, 
         amount: amount / 100, 
         to_user: to_username, 
-        name: paymentform.name, 
-        message: paymentform.message 
+        from_user: currentUser.username || session.user.name || "Anonymous", 
+        supporterId: currentUser._id,
+        creatorId: user._id,
+        name: paymentform.name || currentUser.name || currentUser.username, 
+        message: paymentform.message || "Thanks for your work!",
+        done: false
     });
 
     return x;
 };
 
 
-// export const fetchuser = async (username) => {
-//   await connectDb();
 
-//   const u = await User.findOne({ username }).lean();
-
-//   if (!u) return null;
-
-//   return {
-//     ...u,
-//     _id: u._id.toString(),
-//   };
-// };
 
 export const fetchuser = async (username) => {
   await connectDb();
@@ -142,22 +98,15 @@ export const fetchuserByEmail = async (email) => {
 };
 
 export const fetchpayments = async (username) => {
+    await connectDb();
 
+    let p = await Payment.find({ to_user: username, done: true })
+        .sort({ amount: -1 })
+        .limit(4)
+        .lean();
 
-
-  await connectDb()
-
-  let p = await Payment.find({ to_user: username, done: true })
-    .sort({ amount: -1 })
-    .limit(4)
-    .lean()
-
-  return p.map(payment => ({
-    ...payment,
-    _id: payment._id.toString(),
-  }))
-}
-
+    return JSON.parse(JSON.stringify(p));
+};
 
 
 
@@ -165,7 +114,7 @@ export const updateProfile = async (data, email) => {
 
     await connectDb();
 
-    // Required: Security & Session Check
+    
     const session = await auth();
     if (!session || !session.user || session.user.email !== email) {
         return { error: "Unauthorized access" };
@@ -183,7 +132,7 @@ export const updateProfile = async (data, email) => {
     const oldusername = currentUser.username;
     const newusername = ndata.username;
 
-    // Username is being changed
+    
     if (oldusername !== newusername) {
 
         const existingUser = await User.findOne({
@@ -196,13 +145,11 @@ export const updateProfile = async (data, email) => {
             };
         }
 
-        // Update user
         await User.updateOne(
             { email },
             { $set: ndata }
         );
 
-        // Move all payments to new username
         await Payment.updateMany(
             { to_user: oldusername },
             { $set: { to_user: newusername } }
@@ -214,7 +161,6 @@ export const updateProfile = async (data, email) => {
         };
     }
 
-    // Username didn't change
     await User.updateOne(
         { email },
         { $set: ndata }
@@ -295,7 +241,6 @@ export const fetchCreators = async (query) => {
     await connectDb();
     if (!query || query.trim() === "") return [];
 
-    // Search creators matching name or username (case-insensitive)
     const creators = await User.find({
         isCreator: true,
         $or: [
@@ -307,7 +252,6 @@ export const fetchCreators = async (query) => {
     .limit(6)
     .lean();
 
-    // Convert MongoDB ObjectId _id to plain string for Next.js client components
     return creators.map(creator => ({
         ...creator,
         _id: creator._id.toString()
@@ -315,12 +259,29 @@ export const fetchCreators = async (query) => {
 };
 
 
-// Fetch all completed payments made BY this supporter (Step 19)
-export const fetchMySupports = async (username) => {
+
+export const fetchMySupports = async (identifier) => {
+    await connectDb();
+    if (!identifier) return [];
+
+    const payments = await Payment.find({
+        $or: [
+            { from_user: identifier },
+            { name: { $regex: new RegExp(`^${identifier}$`, "i") } } // Case-insensitive match for name
+        ],
+        done: true
+    })
+    .sort({ createdAt: -1 })
+    .lean();
+
+    return JSON.parse(JSON.stringify(payments));
+};
+
+export const fetchCreatorPayments = async (username) => {
     await connectDb();
     if (!username) return [];
 
-    const payments = await Payment.find({ name: username, done: true })
+    const payments = await Payment.find({ to_user: username, done: true })
         .sort({ createdAt: -1 })
         .lean();
 

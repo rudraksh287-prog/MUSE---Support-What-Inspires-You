@@ -4,7 +4,7 @@ const About = () => {
     return (
         <div className="container mx-auto px-8 md:px-4 py-8">
 
-            {/* Intro */}
+            
             <div className="mb-10">
                 <h1 className="text-3xl font-semibold mb-4">
                     About MUSE..__
@@ -20,7 +20,6 @@ const About = () => {
             </div>
 
 
-            {/* How It Works */}
             <h2 className="text-2xl text-green-900 font-bold mb-5">
                 How It Works
             </h2>
@@ -69,7 +68,7 @@ const About = () => {
             </div>
 
 
-            {/* Benefits for Creators */}
+           
             <div className="mb-10 p-6 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
 
                 <h2 className="text-2xl font-bold text-green-900 mb-4">
@@ -91,7 +90,7 @@ const About = () => {
             </div>
 
 
-            {/* Benefits for Fans */}
+            
             <div className="mb-10 p-6 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
 
                 <h2 className="text-2xl font-bold text-green-900 mb-4">
@@ -113,7 +112,6 @@ const About = () => {
             </div>
 
 
-            {/* Benefits of Collaboration */}
             <div className="mb-10 p-6 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
 
                 <h2 className="text-2xl font-bold text-green-900 mb-4">
@@ -135,7 +133,7 @@ const About = () => {
             </div>
 
 
-            {/* Community Engagement */}
+         
             <div className="mb-10 p-6 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
 
                 <h2 className="text-2xl font-bold text-green-900 mb-4">
@@ -157,7 +155,6 @@ const About = () => {
             </div>
 
 
-            {/* Access to Resources */}
             <div className="mb-10 p-6 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
 
                 <h2 className="text-2xl font-bold text-green-900 mb-4">
@@ -178,8 +175,6 @@ const About = () => {
 
             </div>
 
-
-            {/* Recognition and Exposure */}
             <div className="mb-10 p-6 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
 
                 <h2 className="text-2xl font-bold text-green-900 mb-4">
@@ -201,7 +196,6 @@ const About = () => {
             </div>
 
 
-            {/* Supportive Community */}
             <div className="mb-10 p-6 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
 
                 <h2 className="text-2xl font-bold text-green-900 mb-4">

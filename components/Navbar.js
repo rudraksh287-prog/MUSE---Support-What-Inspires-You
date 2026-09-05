@@ -48,7 +48,7 @@ const Navbar = () => {
           <span className='text-2xl'>MUSE</span>
         </Link>
 
-        {/* Live Creator Search Bar */}
+      
         <div className="relative w-full md:w-72 my-1 md:my-0">
           <input
             type="text"
@@ -58,7 +58,7 @@ const Navbar = () => {
             className="w-full bg-slate-800 text-sm text-white px-3 py-2 rounded-lg border border-slate-700 focus:outline-none focus:border-slate-500"
           />
 
-          {/* Search Dropdown Results */}
+          
           {searchQuery.trim().length > 0 && (
             <div className="absolute left-0 right-0 top-11 bg-slate-900 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50 max-h-60 overflow-y-auto">
               {isSearching ? (

@@ -4,7 +4,14 @@
 import React, { useEffect, useState } from 'react'
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/navigation'
-import { fetchuserByEmail, stopBeingCreator, becomeCreator, updateProfile } from '@/actions/useractions'
+import { 
+    fetchuserByEmail, 
+    stopBeingCreator, 
+    becomeCreator, 
+    updateProfile, 
+    fetchMySupports, 
+    fetchCreatorPayments 
+} from '@/actions/useractions'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -17,7 +24,8 @@ const Dashboard = () => {
     const [saving, setsaving] = useState(false)
     const [becomingCreator, setBecomingCreator] = useState(false)
     const [stoppingCreator, setStoppingCreator] = useState(false)
-    
+    const [mySupports, setMySupports] = useState([]);
+    const [creatorPayments, setCreatorPayments] = useState([]);
 
     useEffect(() => {
 
@@ -35,49 +43,74 @@ const Dashboard = () => {
     }, [status])
 
 
+    // const getData = async () => {
+
+    //     if (!session?.user?.email) return
+
+    //     const u = await fetchuserByEmail(session.user.email)
+
+    //     if (u) {
+    //         setform(u)
+    //     }
+
+    //     if (u?.username) {
+    //         // Fetch payments sent by this user
+    //         const sent = await fetchMySupports(u.username);
+    //         setMySupports(sent);
+    //     }
+
+    //     if (u?.isCreator && u?.username) {
+    //         // Fetch payments received by this creator
+    //         const received = await fetchCreatorPayments(u.username);
+    //         setCreatorPayments(received);
+    //     }
+    // }
+
+
+
     const getData = async () => {
+    if (!session?.user?.email) return;
 
-        if (!session?.user?.email) return
+    const u = await fetchuserByEmail(session.user.email);
 
-        const u = await fetchuserByEmail(session.user.email)
-
-        if (u) {
-            setform(u)
-        }
+    if (u) {
+        setform(u);
     }
 
-    
+   
+    const identifier = u?.username || u?.name;
+
+    if (identifier) {
+        const sent = await fetchMySupports(identifier);
+        setMySupports(sent);
+    }
+
+    if (u?.isCreator && u?.username) {
+        const received = await fetchCreatorPayments(u.username);
+        setCreatorPayments(received);
+    }
+};
 
     const handleChange = (e) => {
-
         setform({
             ...form,
             [e.target.name]: e.target.value
         })
-
     }
 
-
     const handleSubmit = async (e) => {
-
         e.preventDefault()
-
         if (saving) return
 
         setsaving(true)
 
         try {
-
-            const oldusername = session.user.name
-
             const formData = new FormData()
 
             Object.entries(form).forEach(([key, value]) => {
-
                 if (value !== undefined && value !== null) {
                     formData.append(key, value)
                 }
-
             })
 
             const result = await updateProfile(
@@ -86,21 +119,16 @@ const Dashboard = () => {
             )
 
             if (result?.error) {
-
                 toast.error(result.error)
-
                 setsaving(false)
-
                 return
             }
 
-            // Update local dashboard immediately
             setform(prev => ({
                 ...prev,
                 username: result.username
             }))
 
-            // Update NextAuth session
             await update({
                 name: result.username
             })
@@ -108,27 +136,19 @@ const Dashboard = () => {
             toast.success('Profile Updated')
 
         } catch (error) {
-
             console.error("UPDATE PROFILE ERROR:", error)
-
             toast.error("Something went wrong while updating profile")
-
         } finally {
-
             setsaving(false)
-
         }
     }
 
-
     const handleBecomeCreator = async () => {
-
         if (becomingCreator) return
 
         setBecomingCreator(true)
 
         try {
-
             const result = await becomeCreator(session.user.email)
 
             if (result?.error) {
@@ -148,21 +168,14 @@ const Dashboard = () => {
             toast.success("You are now a creator!")
 
         } catch (error) {
-
             console.error("BECOME CREATOR ERROR:", error)
-
             toast.error("Something went wrong")
-
         } finally {
-
             setBecomingCreator(false)
-
         }
     }
 
-
     const handleStopBeingCreator = async () => {
-
         if (stoppingCreator) return
 
         const confirmed = window.confirm(
@@ -174,7 +187,6 @@ const Dashboard = () => {
         setStoppingCreator(true)
 
         try {
-
             const result = await stopBeingCreator(session.user.email)
 
             if (result?.error) {
@@ -194,21 +206,15 @@ const Dashboard = () => {
             toast.success("You are no longer a creator")
 
         } catch (error) {
-
             console.error("STOP CREATOR ERROR:", error)
-
             toast.error("Something went wrong")
-
         } finally {
-
             setStoppingCreator(false)
-
         }
     }
 
     return (
         <>
-
             <ToastContainer
                 position="top-right"
                 autoClose={5000}
@@ -229,17 +235,13 @@ const Dashboard = () => {
                 </h1>
 
                 {!form.isCreator ? (
-
                     <div className="my-6 p-6 border rounded-xl">
-
                         <h2 className="text-xl font-bold">
                             Become a Creator
                         </h2>
-
                         <p className="text-gray-600 my-2">
                             Create your public MUSE page and start receiving support.
                         </p>
-
                         <button
                             type="button"
                             onClick={handleBecomeCreator}
@@ -248,25 +250,18 @@ const Dashboard = () => {
                         >
                             {becomingCreator ? "Setting up..." : "Become a Creator"}
                         </button>
-
                     </div>
-
                 ) : (
-
                     <div className="my-6 p-6 border rounded-xl">
-
                         <h2 className="text-xl font-bold">
                             Creator Account
                         </h2>
-
                         <p className="text-gray-600 my-2">
                             Your creator profile is active.
                         </p>
-
                         <p className="text-sm text-gray-500 mb-4">
                             You can receive support through your public MUSE page.
                         </p>
-
                         <button
                             type="button"
                             onClick={handleStopBeingCreator}
@@ -275,25 +270,14 @@ const Dashboard = () => {
                         >
                             {stoppingCreator ? "Disabling..." : "Stop Being a Creator"}
                         </button>
-
                     </div>
-
                 )}
 
-                <form
-                    className="max-w-2xl mx-auto"
-                    onSubmit={handleSubmit}
-                >
-
+                <form className="max-w-2xl mx-auto" onSubmit={handleSubmit}>
                     <div className='my-2'>
-
-                        <label
-                            htmlFor="name"
-                            className="block mb-2 text-sm font-medium text-gray-900"
-                        >
+                        <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900">
                             Name
                         </label>
-
                         <input
                             value={form.name || ""}
                             onChange={handleChange}
@@ -302,19 +286,12 @@ const Dashboard = () => {
                             id="name"
                             className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
                         />
-
                     </div>
 
-
                     <div className="my-2">
-
-                        <label
-                            htmlFor="email"
-                            className="block mb-2 text-sm font-medium text-gray-900"
-                        >
+                        <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900">
                             Email
                         </label>
-
                         <input
                             value={form.email || ""}
                             onChange={handleChange}
@@ -323,19 +300,12 @@ const Dashboard = () => {
                             id="email"
                             className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
                         />
-
                     </div>
 
-
                     <div className='my-2'>
-
-                        <label
-                            htmlFor="username"
-                            className="block mb-2 text-sm font-medium text-gray-900"
-                        >
+                        <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-900">
                             Username
                         </label>
-
                         <input
                             value={form.username || ""}
                             onChange={handleChange}
@@ -344,19 +314,12 @@ const Dashboard = () => {
                             id="username"
                             className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
                         />
-
                     </div>
 
-
                     <div className="my-2">
-
-                        <label
-                            htmlFor="profilepic"
-                            className="block mb-2 text-sm font-medium text-gray-900"
-                        >
+                        <label htmlFor="profilepic" className="block mb-2 text-sm font-medium text-gray-900">
                             Profile Picture
                         </label>
-
                         <input
                             value={form.profilepic || ""}
                             onChange={handleChange}
@@ -365,19 +328,12 @@ const Dashboard = () => {
                             id="profilepic"
                             className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
                         />
-
                     </div>
 
-
                     <div className="my-2">
-
-                        <label
-                            htmlFor="coverpic"
-                            className="block mb-2 text-sm font-medium text-gray-900"
-                        >
+                        <label htmlFor="coverpic" className="block mb-2 text-sm font-medium text-gray-900">
                             Cover Picture
                         </label>
-
                         <input
                             value={form.coverpic || ""}
                             onChange={handleChange}
@@ -386,21 +342,14 @@ const Dashboard = () => {
                             id="coverpic"
                             className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
                         />
-
                     </div>
 
                     {form.isCreator && (
                         <>
-                            
                             <div className="my-2">
-
-                                <label
-                                    htmlFor="razorpayid"
-                                    className="block mb-2 text-sm font-medium text-gray-900"
-                                >
+                                <label htmlFor="razorpayid" className="block mb-2 text-sm font-medium text-gray-900">
                                     Razorpay Id
                                 </label>
-
                                 <input
                                     value={form.razorpayid || ""}
                                     onChange={handleChange}
@@ -409,19 +358,12 @@ const Dashboard = () => {
                                     id='razorpayid'
                                     className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
                                 />
-
                             </div>
 
-
                             <div className="my-2">
-
-                                <label
-                                    htmlFor="razorpaysecret"
-                                    className="block mb-2 text-sm font-medium text-gray-900"
-                                >
+                                <label htmlFor="razorpaysecret" className="block mb-2 text-sm font-medium text-gray-900">
                                     Razorpay Secret
                                 </label>
-
                                 <input
                                     value={form.razorpaysecret || ""}
                                     onChange={handleChange}
@@ -430,13 +372,11 @@ const Dashboard = () => {
                                     id='razorpaysecret'
                                     className="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs"
                                 />
-
                             </div>
                         </>
                     )}
 
                     <div className="my-6">
-
                         <button
                             type="submit"
                             disabled={saving}
@@ -444,13 +384,57 @@ const Dashboard = () => {
                         >
                             {saving ? "Saving..." : "Save"}
                         </button>
-
                     </div>
-
                 </form>
 
-            </div>
+                {/* Step 19: Supporter History UI */}
+                <div className="my-8 container mx-auto p-4 bg-black text-white rounded-lg  max-w-2xl">
+                    <h2 className="text-2xl font-bold mb-4 text-slate-100">My Support History</h2>
+                    {mySupports.length === 0 ? (
+                        <p className="text-gray-400 text-sm">You haven't supported any creators yet.</p>
+                    ) : (
+                        <ul className="divide-y divide-gray-800">
+                            {mySupports.map((p) => (
+                                <li key={p._id} className="py-3 flex justify-between items-center">
+                                    <div>
+                                        <p className="font-semibold text-blue-400">Supported @{p.to_user}</p>
+                                        {p.message && <p className="text-xs text-gray-300 italic mt-1">"{p.message}"</p>}
+                                    </div>
+                                    <span className="font-bold text-blue-400 b px-3 py-1 rounded-md text-sm">
+                                        ₹{p.amount}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
 
+                {form.isCreator && (
+                    <div className="my-8 container mx-auto p-4 bg-black text-white rounded-lg border border-slate-800 max-w-2xl">
+                        <h2 className="text-2xl font-bold mb-4 text-slate-100">Payments Received</h2>
+                        {creatorPayments.length === 0 ? (
+                            <p className="text-gray-400 text-sm">No supporters have made contributions yet.</p>
+                        ) : (
+                            <ul className="divide-y divide-gray-800">
+                                {creatorPayments.map((p) => (
+                                    <li key={p._id} className="py-3 flex justify-between items-center">
+                                        <div>
+                                            <p className="font-semibold text-blue-500">
+                                                From: {p.name || 'Anonymous'}
+                                            </p>
+                                            {p.message && <p className="text-xs text-gray-300 italic mt-1">"{p.message}"</p>}
+                                        </div>
+                                        <span className="font-bold text-blue-400  px-3 py-1 rounded-md text-sm">
+                                            ₹{p.amount}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                    </div>
+                )}
+
+            </div>
         </>
     )
 }

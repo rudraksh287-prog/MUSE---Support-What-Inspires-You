@@ -7,7 +7,7 @@ import Link from "next/link";
 export default function Home() {
   return (
     <>
-      {/* Hero Section */}
+   
       <div className="flex flex-col gap-5 justify-center items-center h-[44vh] text-center   md:px-0 px-4">
 
         <div className="font-bold text-5xl flex justify-center items-center gap-2">
@@ -47,7 +47,6 @@ export default function Home() {
       <div className="bg-black opacity-60 h-0.5"></div>
 
 
-      {/* Support Creators Section */}
       <div className="text-black container mx-auto pb-22 pt-10 px-4">
 
         <h2 className="text-3xl font-bold text-center my-10">
@@ -124,7 +123,7 @@ export default function Home() {
       <div className="bg-black opacity-60 h-0.5"></div>
 
 
-      {/* Why MUSE Section */}
+   
       <div className="text-black container mx-auto pb-22 pt-10 px-4">
 
         <h2 className="text-3xl font-bold text-center my-10">
